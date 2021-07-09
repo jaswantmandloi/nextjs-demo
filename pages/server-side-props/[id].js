@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/dist/client/router'
+import * as cookie from 'cookie'
 
 export default function Index(props) {
 
@@ -25,14 +26,20 @@ export default function Index(props) {
 
 
 export async function getServerSideProps(context) {
-  console.log('Running ServerSide Props')
-
+  const requestHeaders = context.req.headers
+  const cookies = requestHeaders.cookie;
+  const query = context.query
+  const parsedCookies = cookie.parse(cookies);
+  console.log('cookies', cookies)
+  
   const path = require('path');
 
   return {
     props: {
       baseName: path.basename(`/foo/bar/baz/asdf/${new Date().getTime()}.html`),
-      id: context.query.id
+      cookies: parsedCookies,
+      requestHeaders,
+      query
     }, // will be passed to the page component as props
   }
 }
