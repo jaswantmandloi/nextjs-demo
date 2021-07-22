@@ -11,6 +11,8 @@ export default function Home() {
       <a href="/initial-props/1" > getInitalProps </a>
 
       <a href="/server-side-props/1" > Server Side Props </a>
+
+      <a href="/mergeDataStructure" > mergeDataStructure </a>
       
     </div>
   )

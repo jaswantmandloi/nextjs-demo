@@ -1,0 +1,18 @@
+
+.App ul {
+  list-style: none;
+  display: flex;
+}
+
+.App ul li {
+  padding: 5px;
+}
+.selected {
+  background-color: green;
+}
+.available {
+  background-color: yellow;
+}
+.notAvailable {
+  background-color: red;
+}
