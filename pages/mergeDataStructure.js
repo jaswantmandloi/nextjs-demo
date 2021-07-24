@@ -16,11 +16,15 @@ export default function App() {
 
   useEffect(() => {
     const data = getData2();
-    const [{Products: [{ProductCode}]}] = data
-    setSelectedProdctCode(ProductCode)
+    const [
+      {
+        Products: [{ ProductCode }],
+      },
+    ] = data;
+    setSelectedProdctCode(ProductCode);
 
     const { variantListWithProductCodes, productVarientsMapping } =
-      getMergedProductVariantsWithProductCodes(data, selectedProdctCode);
+      getMergedProductVariantsWithProductCodes(data);
 
     setVariantListWithProductCodes(variantListWithProductCodes);
     setProductVarientsMapping(productVarientsMapping);

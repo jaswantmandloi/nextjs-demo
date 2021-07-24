@@ -1,37 +1,27 @@
-export function getMergedProductVariantsWithProductCodes(
-  variantList,
-  selectedProductCode
-) {
+export function getMergedProductVariantsWithProductCodes(variantList) {
   const productVarientsMapping = {};
   const variantListWithProductCodes = variantList.map(
     ({ VariantType, Products }) => {
-      const mergedVariants = Products.map((Product) => {
-        return selectedProductCode === Product.ProductCode
-          ? { ...Product, isSelected: true, productCodes: [] }
-          : { ...Product, isSelected: false, productCodes: [] };
-      }).reduce((productsByDescription, product) => {
-        const { Description, ProductCode } = product;
-        const {
-          isSelected: previousIsSelected = false,
-          productCodes: previousProductCodes = [],
-        } = productsByDescription[Description] || {};
-        const previouslySelectedProduct = productsByDescription[Description];
-        const newProduct = previousIsSelected
-          ? previouslySelectedProduct
-          : product;
-        const proudctToBeAdded = {
-          ...newProduct,
-          productCodes: [...previousProductCodes, ProductCode],
-        };
+      const mergedVariants = Products.reduce(
+        (productsByDescription, product) => {
+          const { Description, ProductCode } = product;
+          const { productCodes = [] } =
+            productsByDescription[Description] || {};
+          const proudctToBeAdded = {
+            ...product,
+            productCodes: [...productCodes, ProductCode],
+          };
 
-        // Prepare product code and variants mapping
-        const variants = productVarientsMapping[ProductCode]
-          ? productVarientsMapping[ProductCode]
-          : [];
-        productVarientsMapping[ProductCode] = [...variants, Description];
+          // Prepare product code and variants mapping
+          const variants = productVarientsMapping[ProductCode]
+            ? productVarientsMapping[ProductCode]
+            : [];
+          productVarientsMapping[ProductCode] = [...variants, Description];
 
-        return { ...productsByDescription, [Description]: proudctToBeAdded };
-      }, {});
+          return { ...productsByDescription, [Description]: proudctToBeAdded };
+        },
+        {}
+      );
 
       const mergedVariantsWithProductCodes = Object.values(mergedVariants);
       return {
