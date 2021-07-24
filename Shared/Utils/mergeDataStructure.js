@@ -1,3 +1,87 @@
+export function getMergedProductVariantsWithProductCodes(
+  variantList,
+  selectedProductCode
+) {
+  const productVarientsMapping = {};
+  const variantListWithProductCodes = variantList.map(
+    ({ VariantType, Products }) => {
+      const mergedVariants = Products.map((Product) => {
+        return selectedProductCode === Product.ProductCode
+          ? { ...Product, isSelected: true, productCodes: [] }
+          : { ...Product, isSelected: false, productCodes: [] };
+      }).reduce((productsByDescription, product) => {
+        const { Description, ProductCode } = product;
+        const {
+          isSelected: previousIsSelected = false,
+          productCodes: previousProductCodes = [],
+        } = productsByDescription[Description] || {};
+        const previouslySelectedProduct = productsByDescription[Description];
+        const newProduct = previousIsSelected
+          ? previouslySelectedProduct
+          : product;
+        const proudctToBeAdded = {
+          ...newProduct,
+          productCodes: [...previousProductCodes, ProductCode],
+        };
+
+        // Prepare product code and variants mapping
+        const variants = productVarientsMapping[ProductCode]
+          ? productVarientsMapping[ProductCode]
+          : [];
+        productVarientsMapping[ProductCode] = [...variants, Description];
+
+        return { ...productsByDescription, [Description]: proudctToBeAdded };
+      }, {});
+
+      const mergedVariantsWithProductCodes = Object.values(mergedVariants);
+      return {
+        variantType: VariantType,
+        variants: mergedVariantsWithProductCodes,
+      };
+    }
+  );
+
+  return { variantListWithProductCodes, productVarientsMapping };
+}
+
+export function getAvailableProductCodesWithCurrentSelection({
+  selectedVariants,
+  productVarientsMapping,
+  currentItemProductCodes,
+  currentItemIndex,
+}) {
+  const comparingSelectedVariants = selectedVariants.filter(
+    (_, index) => currentItemIndex !== index
+  );
+  const availableProductCodes = currentItemProductCodes.filter(
+    (currentItemProductCode) => {
+      // Get variants by productCode
+      const variantsByProductCode =
+        productVarientsMapping[currentItemProductCode] || [];
+      const availableVariants = variantsByProductCode.filter((item) =>
+        comparingSelectedVariants.includes(item)
+      );
+
+      return comparingSelectedVariants.length === availableVariants.length;
+    }
+  );
+
+  return availableProductCodes;
+}
+
+export function getCurrentSelectedVariantsByProductCode(
+  variantListWithProductCodes,
+  selectedProdctCode
+) {
+  return variantListWithProductCodes.map(({ variants }) => {
+    const [{ Description = "" } = {}] = variants.filter(({ productCodes }) =>
+      productCodes.includes(selectedProdctCode)
+    );
+
+    return Description;
+  });
+}
+
 export function getData1() {
   const productData = [
     {
@@ -115,115 +199,119 @@ export function getData1() {
   return productData;
 }
 
-export function getMergedProductVariantsWithProductCodes(
-  variantList,
-  selectedProductCode
-) {
-  const productVarientsMapping = {};
-  const variantListWithProductCodes = variantList.map(
-    ({ VariantType, Products }) => {
-      const mergedVariants = Products.map((Product) => {
-        return selectedProductCode === Product.ProductCode
-          ? { ...Product, isSelected: true, productCodes: [] }
-          : { ...Product, isSelected: false, productCodes: [] };
-      }).reduce((productsByDescription, product) => {
-        const { Description, ProductCode } = product;
-        const {
-          isSelected: previousIsSelected = false,
-          productCodes: previousProductCodes = [],
-        } = productsByDescription[Description] || {};
-        const previouslySelectedProduct = productsByDescription[Description];
-        const newProduct = previousIsSelected
-          ? previouslySelectedProduct
-          : product;
-        const proudctToBeAdded = {
-          ...newProduct,
-          productCodes: [...previousProductCodes, ProductCode],
-        };
+export function getData2() {
+  const productData = [
+    {
+      VariantType: "Label Colour",
+      Products: [
+        {
+          ProductCode: "1",
+          Description: "Red",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "2",
+          Description: "Black",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "3",
+          Description: "Green",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "4",
+          Description: "Blue",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "5",
+          Description: "Yellow",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "6",
+          Description: "Yellow",
+          ProductImage: "",
+        },
+      ],
+    },
 
-        // Prepare product code and variants mapping
-        const variants = productVarientsMapping[ProductCode]
-          ? productVarientsMapping[ProductCode]
-          : [];
-        productVarientsMapping[ProductCode] = [...variants, Description];
+    {
+      VariantType: "Label Sizes",
+      Products: [
+        {
+          ProductCode: "1",
+          Description: "2x108",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "2",
+          Description: "2x108",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "3",
+          Description: "2x108",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "4",
+          Description: "2x108",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "5",
+          Description: "2x108",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "6",
+          Description: "3x108",
+          ProductImage: "",
+        },
+      ],
+    },
 
-        return { ...productsByDescription, [Description]: proudctToBeAdded };
-      }, {});
+    {
+      VariantType: "Label Widths",
+      Products: [
+        {
+          ProductCode: "1",
+          Description: "11 cm",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "2",
+          Description: "22 cm",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "3",
+          Description: "33 cm",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "4",
+          Description: "33 cm",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "5",
+          Description: "11 cm",
+          ProductImage: "",
+        },
+        {
+          ProductCode: "6",
+          Description: "22 cm",
+          ProductImage: "",
+        },
+      ],
+    },
+  ];
 
-      const mergedVariantsWithProductCodes = Object.values(mergedVariants);
-      return {
-        variantType: VariantType,
-        variants: mergedVariantsWithProductCodes,
-      };
-    }
-  );
-
-  return { variantListWithProductCodes, productVarientsMapping };
+  return productData;
 }
-
-export function getAvailableProductCodesWithCurrentSelection({
-  selectedVariants,
-  productVarientsMapping,
-  currentItemProductCodes,
-  currentItemIndex,
-}) {
-  const comparingSelectedVariants = selectedVariants.filter(
-    (_, index) => currentItemIndex !== index
-  );
-  const availableProductCodes = currentItemProductCodes.filter(
-    (currentItemProductCode) => {
-      // Get variants by productCode
-      const variantsByProductCode = (
-        productVarientsMapping[currentItemProductCode] || []
-      ).filter((item) => item.includes(comparingSelectedVariants));
-
-      return comparingSelectedVariants.length === variantsByProductCode.length;
-    }
-  );
-
-  return availableProductCodes;
-}
-
-export function getCurrentSelectedVariantsByProductCode(
-  variantListWithProductCodes,
-  selectedProdctCode
-) {
-  return variantListWithProductCodes.map(({ variants }) => {
-    const [{ Description = "" } = {}] = variants.filter(({ productCodes }) =>
-      productCodes.includes(selectedProdctCode)
-    );
-
-    return Description;
-  });
-}
-
-/** Other testing data */
-var colors = [
-  { productCode: "1", desc: "Red" },
-  { productCode: "2", desc: "Black" },
-  { productCode: "3", desc: "Green" },
-  { productCode: "4", desc: "Blue" },
-  { productCode: "5", desc: "Yellow" },
-  { productCode: "6", desc: "Yellow" },
-];
-
-var sizes = [
-  { productCode: "1", desc: "2x108" },
-  { productCode: "2", desc: "2x108" },
-  { productCode: "3", desc: "2x108" },
-  { productCode: "4", desc: "2x108" },
-  { productCode: "5", desc: "2x108" },
-  { productCode: "6", desc: "3x108" },
-];
-
-var widths = [
-  { productCode: "1", desc: "11 cm" },
-  { productCode: "2", desc: "22 cm" },
-  { productCode: "3", desc: "33 cm" },
-  { productCode: "4", desc: "33 cm" },
-  { productCode: "5", desc: "11 cm" },
-  { productCode: "6", desc: "22 cm" },
-];
 
 /** */
 

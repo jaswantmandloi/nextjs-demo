@@ -3,6 +3,7 @@ import styles from "../styles/MergeModule.module.css";
 import {
   getMergedProductVariantsWithProductCodes,
   getData1,
+  getData2,
   getCurrentSelectedVariantsByProductCode,
   getAvailableProductCodesWithCurrentSelection,
 } from "../Shared/Utils/mergeDataStructure";
@@ -14,7 +15,10 @@ export default function App() {
   const [productVarientsMapping, setProductVarientsMapping] = useState({});
 
   useEffect(() => {
-    const data = getData1();
+    const data = getData2();
+    const [{Products: [{ProductCode}]}] = data
+    setSelectedProdctCode(ProductCode)
+
     const { variantListWithProductCodes, productVarientsMapping } =
       getMergedProductVariantsWithProductCodes(data, selectedProdctCode);
 
